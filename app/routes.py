@@ -2,11 +2,13 @@ from flask import render_template, flash, redirect, url_for
 from app import app
 from app.forms import LoginForm
 
+#Index view function
 @app.route('/')
 @app.route('/index')
 def index():
 	return render_template('index.html', title='Home')
 
+#Login view function
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	form = LoginForm()
