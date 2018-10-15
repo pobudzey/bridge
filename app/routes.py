@@ -3,11 +3,12 @@ from app import app
 from app.forms import LoginForm
 from flask_login import current_user, login_user
 from app.models import User
-from flask_login import logout_user
+from flask_login import logout_user, login_required
 
 #Index view function
 @app.route('/')
 @app.route('/index')
+@login_required
 def index():
 	return render_template('index.html', title='Home')
 
