@@ -4,6 +4,7 @@ from app.forms import LoginForm
 from flask_login import current_user, login_user
 from app.models import User
 from flask_login import logout_user, login_required
+from werkzeug.urls import url_parse
 
 #Index view function
 @app.route('/')
@@ -24,6 +25,9 @@ def login():
 			flash('Invalid username or password')
 			return redirect(url_for('login'))
 		login_user(user, remember=form.remember_me.data)
+		next_page = request.args.get('next')
+		if not next_page or url_parse(next_page).netloc != '';
+			next_page = url_for('index')
 		return redirect(url_for('index'))
 	return render_template('login.html', title='Log in', form=form)
 
