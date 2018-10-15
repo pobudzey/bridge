@@ -27,13 +27,13 @@ def login():
 		next_page = request.args.get('next')
 		if not next_page or url_parse(next_page).netloc != '':
 			next_page = url_for('index')
-		return redirect(url_for(next_page)
+		return redirect(next_page)
 	return render_template('login.html', title='Log in', form=form)
 
-	#logout view function
-	@app.route('/logout')
-	def logout():
-		logout_user()
-		return redirect(url_for('index'))
+#logout view function
+@app.route('/logout')
+def logout():
+	logout_user()
+	return redirect(url_for('index'))
 
 
