@@ -28,7 +28,8 @@ def index():
             'body': 'Just chillin\''
         }
     ]
-	return render_template('index.html', title='Home', form=form, posts=posts)
+    return render_template("index.html", title='Home Page', form=form,
+                           posts=posts)
 
 #Login view function
 @app.route('/login', methods=['GET', 'POST'])
