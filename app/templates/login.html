@@ -20,5 +20,6 @@
 		</p>
 		<p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
 		<p>{{ form.submit() }}</p>
+		<p>New to Bridge? <a href="{{ url_for('signup') }}">Sign up now!</a></p>
 	</form>
 {% endblock %}
