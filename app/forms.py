@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, validators
-from wtforms.validators import DataRequired
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
+from app.models import User
 
 #Login form
 class LoginForm(FlaskForm):
@@ -9,16 +10,22 @@ class LoginForm(FlaskForm):
 	remember_me = BooleanField('Remember Me')
 	submit = SubmitField('Log in')
 
+#Signup form
 class SignupForm(FlaskForm):
-    firstname = StringField('First Name', [validators.Length(min=3, max=20)])
-    lastname = StringField('Last Name', [validators.Length(min=3, max=20)])
-    username = StringField('Username', [validators.Length(min=6, max=20)])
-    email = StringField('Email Address', [validators.Length(min=6, max=35)])
-    password = PasswordField('New Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Password must match')
-        ])
-    confirm = PasswordField('Repeat Password')
-    accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
-    submit = SubmitField('Sign up')
-    
+	username = StringField('Username', validators=[DataRequired()])
+	password = PasswordField('Password', validators=[DataRequired()])
+	password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
+	email = StringField('Email', validators=[DataRequired(), Email()])
+	submit = SubmitField('Register')
+	
+	#Method that checks if the entered username is already in the database
+	def validate_user(self, username):
+		user = User.query.filter_by(username=username.data).first()
+		if user is not None:
+			raise ValidationError('This username isn\'t available. Please try another one.')
+	
+	#Method that checks if the entered email is used by an existing username in the database
+	def validate_email(self, email):
+		user = User.query.filter_by(email=email.data).first()
+		if user is not None:
+			raise ValidationError('This email address is in use by an existing account. Please use another one.') 
