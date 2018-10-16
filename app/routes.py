@@ -1,16 +1,35 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
-from app.forms import LoginForm, SignupForm
+from app.forms import LoginForm, SignupForm, PostForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User
+from app.models import User, Post
 from werkzeug.urls import url_parse
 
 #Index view function
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-	return render_template('index.html', title='Home')
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body=form.post.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post has been posted!')
+        return redirect(url_for('index'))
+    #Creating mock posts
+    posts = [
+        {
+            'author': {'username': 'Jesse'},
+            'body': 'Testing the posts!'
+        },
+        {
+            'author': {'username': 'Maxim'},
+            'body': 'Just chillin\''
+        }
+    ]
+    return render_template("index.html", title='Home Page', form=form,
+                           posts=posts)
 
 #Login view function
 @app.route('/login', methods=['GET', 'POST'])
