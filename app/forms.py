@@ -19,7 +19,7 @@ class SignupForm(FlaskForm):
 	submit = SubmitField('Register')
 	
 	#Method that checks if the entered username is already in the database
-	def validate_user(self, username):
+	def validate_username(self, username):
 		user = User.query.filter_by(username=username.data).first()
 		if user is not None:
 			raise ValidationError('This username isn\'t available. Please try another one.')
