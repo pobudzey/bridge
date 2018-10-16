@@ -17,17 +17,7 @@ def index():
         db.session.commit()
         flash('Your post has been posted!')
         return redirect(url_for('index'))
-    #Creating mock posts
-    posts = [
-        {
-            'author': {'username': 'Jesse'},
-            'body': 'Testing the posts!'
-        },
-        {
-            'author': {'username': 'Maxim'},
-            'body': 'Just chillin\''
-        }
-    ]
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
     return render_template("index.html", title='Home Page', form=form,
                            posts=posts)
 
