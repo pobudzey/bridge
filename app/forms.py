@@ -29,3 +29,9 @@ class SignupForm(FlaskForm):
 		user = User.query.filter_by(email=email.data).first()
 		if user is not None:
 			raise ValidationError('This email address is in use by an existing account. Please use another one.') 
+
+#Form for posts
+class PostForm(FlaskForm):
+    post = TextAreaField('Say something!', validators=[
+        DataRequired(), Length(min=1, max=140)])
+    submit = SubmitField('Submit')
