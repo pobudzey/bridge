@@ -22,7 +22,7 @@ class SignupForm(FlaskForm):
 	def validate_user(self, username):
 		user = User.query.filter_by(username=username.data).first()
 		if user is not None:
-			raise ValidationError('This username isn't available. Please try another one.')
+			raise ValidationError('This username isn\'t available. Please try another one.')
 	
 	#Method that checks if the entered email is used by an existing username in the database
 	def validate_email(self, email):
