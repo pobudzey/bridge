@@ -1,8 +1,8 @@
-#flask
-flask==1.0.2
+#Flask
+Flask==1.0.2
 
-#flask packages
-flask-wtf==0.14
-flask-sqlalchemy==2.3
-flask-migrate==2.3
-flask-login==0.4.1
+#Flask packages
+Flask-WTF==0.14.2
+Flask-SQLAlchemy==2.3.2
+Flask-Migrate==2.2.1
+Flask-Login==0.4.1
