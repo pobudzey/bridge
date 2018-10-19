@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
-from app.forms import LoginForm, SignupForm, PostForm
+from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post
 from werkzeug.urls import url_parse
@@ -67,3 +67,20 @@ def user(username):
 	user = User.query.filter_by(username=username).first_or_404()
 	posts = user.posts.order_by(Post.timestamp.desc()).all()
 	return render_template('user.html', user=user, posts=posts)
+
+#Profile editor view function
+@app.route('/editprofile', methods=['GET', 'POST'])
+@login_required
+def editprofile():
+    form = ProfileEditorForm()
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.about = form.about.data
+        db.session.commit()
+        flash('Changes saved.')
+        return redirect(url_for('editprofile'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.about.data = current_user.about
+    return render_template('editprofile.html', title='Edit Profile',
+                           form=form)

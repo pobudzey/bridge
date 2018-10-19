@@ -17,21 +17,27 @@ class SignupForm(FlaskForm):
 	password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
 	email = StringField('Email', validators=[DataRequired(), Email()])
 	submit = SubmitField('Register')
-	
+
 	#Method that checks if the entered username is already in the database
 	def validate_username(self, username):
 		user = User.query.filter_by(username=username.data).first()
 		if user is not None:
 			raise ValidationError('This username isn\'t available. Please try another one.')
-	
+
 	#Method that checks if the entered email is used by an existing username in the database
 	def validate_email(self, email):
 		user = User.query.filter_by(email=email.data).first()
 		if user is not None:
-			raise ValidationError('This email address is in use by an existing account. Please use another one.') 
+			raise ValidationError('This email address is in use by an existing account. Please use another one.')
 
 #Form for posts
 class PostForm(FlaskForm):
     post = TextAreaField('Say something!', validators=[
         DataRequired(), Length(min=1, max=140)])
     submit = SubmitField('Submit')
+
+#Profile editor form
+class ProfileEditorForm(FlaskForm):
+	username = StringField('Username', validators=[DataRequired()])
+	about = TextAreaField('About me', validators=[Length(min=0, max=140)])
+	submit = SubmitField('Submit')
