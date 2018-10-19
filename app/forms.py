@@ -35,3 +35,9 @@ class PostForm(FlaskForm):
     post = TextAreaField('Say something!', validators=[
         DataRequired(), Length(min=1, max=140)])
     submit = SubmitField('Submit')
+
+#profile editor form
+class ProfileEditorForm(FlaskForm):
+	username = StringField('Username', validators=[DataRequired()])
+	about = TextAreaField('About me', validators=[Length(min=0, max=140)])
+	submit = SubmitField('Submit')
