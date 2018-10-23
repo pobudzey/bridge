@@ -1,0 +1,4 @@
+<div class="panel panel-info">
+    <div class="panel-heading"><a href='{{ url_for('user', username=post.author.username) }}'><b>{{ post.author.username }}</b></a> posted {{ moment(post.timestamp).fromNow() }}</div>
+    <div class="panel-body">{{ post.body }}</div>
+</div>

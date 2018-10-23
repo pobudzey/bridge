@@ -10,6 +10,6 @@
 	{% endif %}
 	<hr>
 	{% for post in posts %}
-        <p>{{ post.author.username }} says: <b>{{ post.body }}</b></p>
+		{% include 'post.html' %}
 	{% endfor %}
 {% endblock %}
