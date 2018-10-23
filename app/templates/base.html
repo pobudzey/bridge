@@ -1,32 +1,39 @@
-<html>
-    <head>
-      {% if title %}
-      <title>{{ title }} - Bridge</title>
-      {% else %}
-      <title>Welcome to Bridge!</title>
-      {% endif %}
-    </head>
-    <body>
-        <div>
-          Bridge
-          <a href="{{ url_for('index') }}">Home</a>
-          {% if current_user.is_anonymous %}
-          <a href="{{ url_for('login') }}">Log in</a>
-          {% else %}
-	  <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
-          <a href="{{ url_for('logout') }}">Log out</a>
-          {% endif %}
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+    {% if title %}{{ title }} - Bridge{% else %}Welcome to Bridge!{% endif %}
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ url_for('index') }}">Bridge</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="{{ url_for('index') }}"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if current_user.is_anonymous %}
+                <li><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
+                {% else %}
+                <li><a href="{{ url_for('user', username = current_user.username) }}"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
+                <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
+                {% endif %}
+            </ul>
         </div>
-        <hr>
-	{% with messages = get_flashed_messages() %}
-	{% if messages %}
-	<ul>
-		{% for message in messages %}
-		<li>{{ message }}</li>
-		{% endfor %}
-	</ul>
-	{% endif %}
-	{% endwith %}
-        {% block content %}{% endblock %}
-    </body>
-</html>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories = true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {% block app_content %}{% endblock %}
+    </div>
+{% endblock %}

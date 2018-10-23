@@ -15,7 +15,7 @@ def index():
         post = Post(body=form.post.data, author=current_user)
         db.session.add(post)
         db.session.commit()
-        flash('Your post has been posted!')
+        flash('Your post has been posted!', 'success')
         return redirect(url_for('index'))
     posts = Post.query.order_by(Post.timestamp.desc()).all()
     return render_template("index.html", title='Home Page', form=form,
@@ -30,7 +30,7 @@ def login():
 	if form.validate_on_submit():
 		user = User.query.filter_by(username=form.username.data).first()
 		if user is None or not user.check_password(form.password.data):
-			flash('Invalid username or password')
+			flash('Invalid username or password', 'danger')
 			return redirect(url_for('login'))
 		login_user(user, remember=form.remember_me.data)
 		next_page = request.args.get('next')
@@ -56,7 +56,7 @@ def signup():
 		user.set_password(form.password.data)
 		db.session.add(user)
 		db.session.commit()
-		flash('Congratulations, you have signed up for Bridge!')
+		flash('Congratulations, you have signed up for Bridge!', 'success')
 		return redirect(url_for('login'))
 	return render_template('signup.html', title='Sign Up', form=form)
 
@@ -77,8 +77,8 @@ def editprofile():
         current_user.username = form.username.data
         current_user.about = form.about.data
         db.session.commit()
-        flash('Changes saved.')
-        return redirect(url_for('editprofile'))
+        flash('Changes saved.', 'success')
+        return redirect(url_for('user', username = current_user.username))
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.about.data = current_user.about
