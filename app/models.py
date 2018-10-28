@@ -11,6 +11,9 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     about = db.Column(db.String(140))
+    messages_sent = db.relationship('Message', foreign_keys = 'Message.sender_id', backref = 'sender', lazy = 'dynamic')
+    messages_received = db.relationship('Message', foreign_keys = 'Message.recipient_id', backref = 'recipient', lazy = 'dynamic')
+    last_message_read_time = db.Column(db.DateTime)
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -24,6 +27,10 @@ class User(UserMixin, db.Model):
     @login.user_loader
     def load_user(id):
     	return User.query.get(int(id))
+    
+    def new_messages(self):
+        last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
+        return Message.query.filter_by(recipient = self).filter(Message.timestamp > last_read_time).count()
     
 #Post database model
 class Post(db.Model):
