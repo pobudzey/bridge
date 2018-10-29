@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
-from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm
+from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm, MessageForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post
 from werkzeug.urls import url_parse
@@ -61,12 +61,13 @@ def signup():
 	return render_template('signup.html', title='Sign Up', form=form)
 
 #User profile view function
-@app.route('/user/<username>')
+@app.route('/user/<username>', methods=['GET', 'POST'])
 @login_required
 def user(username):
 	user = User.query.filter_by(username=username).first_or_404()
 	posts = user.posts.order_by(Post.timestamp.desc()).all()
-	return render_template('user.html', user=user, posts=posts)
+	form = MessageForm()
+	return render_template('user.html', user=user, posts=posts, form=form, recipient=username)
 
 #Profile editor view function
 @app.route('/editprofile', methods=['GET', 'POST'])
