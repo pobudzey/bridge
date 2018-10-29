@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from app import app, db
 from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm, MessageForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Post
+from app.models import User, Post, Message
 from werkzeug.urls import url_parse
 
 #Index view function
@@ -67,7 +67,12 @@ def user(username):
 	user = User.query.filter_by(username=username).first_or_404()
 	posts = user.posts.order_by(Post.timestamp.desc()).all()
 	form = MessageForm()
-	return render_template('user.html', user=user, posts=posts, form=form, recipient=username)
+	if form.validate_on_submit():
+		msg = Message(sender = current_user, recipient = user, body = form.message.data)
+		db.session.add(msg)
+		db.session.commit()
+		flash('Your message has been successfully sent!', 'success')
+	return render_template('user.html', title=username, user=user, posts=posts, form=form, recipient=username)
 
 #Profile editor view function
 @app.route('/editprofile', methods=['GET', 'POST'])
