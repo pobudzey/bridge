@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block app_content %}
+	<h1>Messages</h1>
+	<hr>
+	{% for message in messages %}
+        <div class="well">{{ message.sender.username }} says: {{ message.body }}</div>
+    {% endfor %}
+{% endblock %}

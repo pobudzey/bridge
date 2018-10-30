@@ -4,6 +4,7 @@ from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm, Messag
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post, Message
 from werkzeug.urls import url_parse
+from datetime import datetime
 
 #Index view function
 @app.route('/', methods=['GET', 'POST'])
@@ -90,3 +91,12 @@ def editprofile():
         form.about.data = current_user.about
     return render_template('editprofile.html', title='Edit Profile',
                            form=form)
+
+#Messages view function
+@app.route('/messages')
+@login_required
+def messages():
+	current_user.last_message_read_time = datetime.utcnow()
+	db.session.commit()
+	messages = current_user.messages_received.order_by(Message.timestamp.desc())
+	return render_template('messages.html', title = 'Messages', messages = messages)
