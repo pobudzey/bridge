@@ -1,9 +1,10 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
-from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm
+from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm, MessageForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Post
+from app.models import User, Post, Message
 from werkzeug.urls import url_parse
+from datetime import datetime
 
 #Index view function
 @app.route('/', methods=['GET', 'POST'])
@@ -61,12 +62,18 @@ def signup():
 	return render_template('signup.html', title='Sign Up', form=form)
 
 #User profile view function
-@app.route('/user/<username>')
+@app.route('/user/<username>', methods=['GET', 'POST'])
 @login_required
 def user(username):
 	user = User.query.filter_by(username=username).first_or_404()
 	posts = user.posts.order_by(Post.timestamp.desc()).all()
-	return render_template('user.html', user=user, posts=posts)
+	form = MessageForm()
+	if form.validate_on_submit():
+		msg = Message(sender = current_user, recipient = user, body = form.message.data)
+		db.session.add(msg)
+		db.session.commit()
+		flash('Your message has been successfully sent!', 'success')
+	return render_template('user.html', title=username, user=user, posts=posts, form=form, recipient=username)
 
 #Profile editor view function
 @app.route('/editprofile', methods=['GET', 'POST'])
@@ -84,3 +91,12 @@ def editprofile():
         form.about.data = current_user.about
     return render_template('editprofile.html', title='Edit Profile',
                            form=form)
+
+#Messages view function
+@app.route('/messages')
+@login_required
+def messages():
+	current_user.last_message_read_time = datetime.utcnow()
+	db.session.commit()
+	messages = current_user.messages_received.order_by(Message.timestamp.desc())
+	return render_template('messages.html', title = 'Messages', messages = messages)

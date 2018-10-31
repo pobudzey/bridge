@@ -41,3 +41,8 @@ class ProfileEditorForm(FlaskForm):
 	username = StringField('Username', validators=[DataRequired()])
 	about = TextAreaField('About me', validators=[Length(min=0, max=140)])
 	submit = SubmitField('Submit')
+
+#Message form
+class MessageForm(FlaskForm):
+	message = TextAreaField('Message:', validators = [DataRequired(), Length(min = 0, max = 500)])
+	submit = SubmitField('Send message')
