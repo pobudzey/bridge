@@ -81,16 +81,23 @@ def user(username):
 def editprofile():
     form = ProfileEditorForm()
     if form.validate_on_submit():
-        current_user.username = form.username.data
+        current_user.first_name = form.first_name.data
+        current_user.last_name = form.last_name.data
+        current_user.phone_number = form.phone_number.data
+        current_user.date_of_birth = form.date_of_birth.data
+        current_user.gender = form.gender.data
         current_user.about = form.about.data
         db.session.commit()
         flash('Changes saved.', 'success')
         return redirect(url_for('user', username = current_user.username))
     elif request.method == 'GET':
-        form.username.data = current_user.username
+        form.first_name.data = current_user.first_name
+        form.last_name.data = current_user.last_name
+        form.phone_number.data = current_user.phone_number
+        form.date_of_birth.data = current_user.date_of_birth
+        form.gender.data = current_user.gender
         form.about.data = current_user.about
-    return render_template('editprofile.html', title='Edit Profile',
-                           form=form)
+    return render_template('editprofile.html', title='Edit Profile', form=form)
 
 #Messages view function
 @app.route('/messages')
