@@ -38,7 +38,11 @@ class PostForm(FlaskForm):
 
 #Profile editor form
 class ProfileEditorForm(FlaskForm):
-	username = StringField('Username', validators=[DataRequired()])
+	first_name = StringField('First name', validators=[Length(min=0, max=20)])
+	last_name = StringField('Last name', validators=[Length(min=0, max=20)])
+	phone_number = StringField('Phone number', validators=[Length(min=0, max=20)])
+	date_of_birth = StringField('Date of birth', validators=[Length(min=0, max=20)])
+	gender = StringField('Gender', validators=[Length(min=0, max=20)])
 	about = TextAreaField('About me', validators=[Length(min=0, max=140)])
 	submit = SubmitField('Submit')
 

@@ -14,6 +14,11 @@ class User(UserMixin, db.Model):
     messages_sent = db.relationship('Message', foreign_keys = 'Message.sender_id', backref = 'sender', lazy = 'dynamic')
     messages_received = db.relationship('Message', foreign_keys = 'Message.recipient_id', backref = 'recipient', lazy = 'dynamic')
     last_message_read_time = db.Column(db.DateTime)
+    first_name = db.Column(db.String(20))
+    last_name = db.Column(db.String(20))
+    phone_number = db.Column(db.String(20))
+    date_of_birth = db.Column(db.String(20))
+    gender = db.Column(db.String(20))
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
