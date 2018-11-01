@@ -21,5 +21,19 @@ class UserModelCase(unittest.TestCase):
 		self.assertFalse(u.check_password('wrongpassword'))
 		self.assertTrue(u.check_password('goodpassword'))
 
+	#Login behaviour test
+	def login(self, username, password):
+		r = self.app.post('/login', data=dict(username='marc', 
+		password='asdfcxz'), follow_redirects=True)
+		self.assertIn('Log in successful', r.data)
+		self.assertTrue()
+
+	#Logout behaviour test
+	def logout(self):
+		r = self.app.post('/login', data=dict(username='marc', 
+		password='asdfcxz'), follow_redirects=True)
+		self.assertIn('Log out successful', r.data)
+
+
 if __name__ == '__main__':
 	unittest.main()
