@@ -2,107 +2,83 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
 
 <div class="container">
-      <div class="row">
-      <div class="col-md-5  toppad  pull-right col-md-offset-3 ">
-       <br>
-      </div>
-        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad" >
-
-
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">{{ user.username }}</h3>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{ user.username }}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <!-- Placeholder user image -->
+                        <div class="col-md-3" align="center"><img alt="User Profile Picture" src="https://cdn.onlinewebfonts.com/svg/img_191958.png" class="img-circle img-responsive"></div>
+                        <div class="col-md-9">
+                            <table class="table">
+                                <tr>
+                                    <td>First name:</td>
+                                    <td>{% if user.first_name %}{{ user.first_name }}{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <td>Last name:</td>
+                                    <td>{% if user.last_name %}{{ user.last_name }}{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <td>Phone number:</td>
+                                    <td>{% if user.phone_number %}{{ user.phone_number }}{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <td>Gender:</td>
+                                    <td>{% if user.gender %}{{ user.gender }}{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <td>Date of birth:</td>
+                                    <td>{% if user.date_of_birth %}{{ user.date_of_birth }}{% endif %}</td>
+                                </tr>
+                                <tr>
+                                    <td>About me:</td>
+                                    <td>{% if user.about %}{{ user.about }}{% endif %}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                {% if user == current_user %}
+                        <a class="btn btn-warning" href="{{ url_for('editprofile') }}" role="button">Edit profile <span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                {% else %}
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newMessageModal">Message <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></button>
+                    <div class="modal fade" id="newMessageModal" tabindex="-1" role="dialog" aria-labelledby="newMessageModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="newMessageModalLabel">New message to {{ recipient }}</h4>
+                                </div>
+                                <form method="post" role="form">
+                                {{ form.hidden_tag() }}
+                                {{ wtf.form_errors(form, hiddens="only") }}
+                                <div class="modal-body">
+                                    {{ wtf.form_field(form.message) }}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    {{ wtf.form_field(form.submit) }}
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                </div>
             </div>
-              <div class="panel-body">
-                  <div class="row">
-                      <div class="col-md-3 col-lg-3 " align="center"> <img alt="User Pic" src="https://cdn.onlinewebfonts.com/svg/img_191958.png" class="img-circle img-responsive"> </div>
-                      <div class=" col-md-9 col-lg-9 ">
-                          <table class="table table-user-information">
-                    <tbody>
-                      <tr>
-                        <td>First name:</td>
-                        <td>{% if user.first_name %}
-                        <p>{{ user.first_name }}</p>
-	                        {% endif %}</td>
-                      </tr>
-                      <tr>
-                        <td>Last Name:</td>
-                        <td>{% if user.last_name %}
-                        <p>{{ user.last_name }}</p>
-                            {% endif %}</td>
-                      </tr>
-                      <tr>
-                        <td>Phone number:</td>
-                        <td>{% if user.phone_number %}
-                        <p>{{ user.phone_number }}</p>
-	                        {% endif %}</td>
-                      </tr>
-                      <tr>
-                        <td>Gender:</td>
-                        <td>{% if user.gender %}
-                        <p>{{ user.gender }}</p>
-	                        {% endif %}</td>
-                      </tr>
-                      <tr>
-                        <td>Date of birth:</td>
-                        <td>{% if user.date_of_birth %}
-                        <p>{{ user.date_of_birth }}</p>
-	                        {% endif %}</td>
-                      </tr>
-                      <tr>
-                        <td>About me:</td>
-                        <td>{% if user.about %}
-                        <p>{{ user.about }}</p>
-	                        {% endif %}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                      </div>
-                  </div>
-              </div>
-
-              <div class="panel-footer">
-                      {% if user == current_user %}
-                  <span class="pull-right">
-                       <a href="{{url_for('editprofile')}}" data-original-title="Edit this user" data-toggle="tooltip" type="button" class="btn btn-sm btn-warning"><i class="glyphicon glyphicon-edit"></i></a>
-                  </span>
-                      {% else %}
-                  <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#newMessageModal">Message <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></button>
-                  <div class="modal fade" id="newMessageModal" tabindex="-1" role="dialog" aria-labelledby="newMessageModalLabel">
-                      <div class="modal-dialog" role="document">
-                          <div class="modal-content">
-                              <div class="modal-header">
-                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                  <h4 class="modal-title" id="newMessageModalLabel">New message to {{ recipient }}</h4>
-                              </div>
-                              <form method="post" role="form">
-                                  {{ form.hidden_tag() }}
-                                  {{ wtf.form_errors(form, hiddens="only") }}
-                                  <div class="modal-body">
-                                      {{ wtf.form_field(form.message) }}
-                                  </div>
-                                  <div class="modal-footer">
-                                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                      {{ wtf.form_field(form.submit) }}
-                                  </div>
-                              </form>
-                          </div>
-                      </div>
-                  </div>
-                                  {% endif %}
-
-              </div>
-          </div>
         </div>
-      </div>
+    </div>
 </div>
-	{% for post in posts %}
-		{% include 'post.html' %}
-	{% endfor %}
+    
+{% for post in posts %}
+    {% include 'post.html' %}
+{% endfor %}
+    
 {% endblock %}
