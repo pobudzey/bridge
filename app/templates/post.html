@@ -1,4 +1,7 @@
 <div class="panel panel-info">
     <div class="panel-heading"><a href='{{ url_for('user', username=post.author.username) }}'><b>{{ post.author.username }}</b></a> posted {{ moment(post.timestamp).fromNow() }}</div>
     <div class="panel-body">{{ post.body }}</div>
+    {% if post.image_url %}
+      <img src="{{ post.image_url }}" alt="{{ post.image_filename }}" style="width:600px;height:450px;">
+    {% endif %}
 </div>

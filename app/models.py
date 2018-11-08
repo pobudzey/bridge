@@ -43,13 +43,16 @@ class Post(db.Model):
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    #image uploading related fields
+    image_filename = db.Column(db.String, default=None, nullable=True)
+    image_url = db.Column(db.String, default=None, nullable=True)
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
 
 #Message database model
 class Message(db.Model):
-	id = db.Column(db.Integer, primary_key = True)
+	id = db.Column(db.Integer, primary_key=True)
 	sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	body = db.Column(db.String(500))
