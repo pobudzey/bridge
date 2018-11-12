@@ -5,4 +5,4 @@ venv/
 *.pyc
 .idea/
 app.db
-project/
+static/
