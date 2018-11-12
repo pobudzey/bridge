@@ -8,6 +8,6 @@ class Config(object):
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 	# Uploads
-	UPLOADS_DEFAULT_DEST = basedir + '/project/static/img/'
+	UPLOADS_DEFAULT_DEST = basedir + '/static/img/'
 
-	UPLOADED_IMAGES_DEST = basedir + '/project/static/img/'
+	UPLOADED_IMAGES_DEST = basedir + '/static/img/'
