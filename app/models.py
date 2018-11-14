@@ -31,7 +31,7 @@ class User(UserMixin, db.Model):
 
     @login.user_loader
     def load_user(id):
-    	return User.query.get(int(id))
+        return User.query.get(int(id))
     
     def new_messages(self):
         last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
@@ -52,11 +52,11 @@ class Post(db.Model):
 
 #Message database model
 class Message(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-	recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-	body = db.Column(db.String(500))
-	timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
-	
-	def __repr__(self):
-		return '<Message {}>'.format(self.body)
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    body = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+
+    def __repr__(self):
+        return '<Message {}>'.format(self.body)

@@ -11,17 +11,17 @@ from datetime import datetime
 @app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    form = PostForm()
-    if form.validate_on_submit():
-        filename = images.save(request.files['image'])
-        url = images.url(filename)
-        post = Post(image_filename=filename, image_url=url, body=form.post.data, author=current_user)
-        db.session.add(post)
-        db.session.commit()
-        flash('Your post has been posted!', 'success')
-        return redirect(url_for('index'))
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template("index.html", title='Home Page', form=form,
+	form = PostForm()
+	if form.validate_on_submit():
+		filename = images.save(request.files['image'])
+		url = images.url(filename)
+		post = Post(image_filename=filename, image_url=url, body=form.post.data, author=current_user)
+		db.session.add(post)
+		db.session.commit()
+		flash('Your post has been posted!', 'success')
+		return redirect(url_for('index'))
+	posts = Post.query.order_by(Post.timestamp.desc()).all()
+	return render_template("index.html", title='Home Page', form=form,
                            posts=posts)
 
 #Login view function
@@ -81,25 +81,25 @@ def user(username):
 @app.route('/editprofile', methods=['GET', 'POST'])
 @login_required
 def editprofile():
-    form = ProfileEditorForm()
-    if form.validate_on_submit():
-        current_user.first_name = form.first_name.data
-        current_user.last_name = form.last_name.data
-        current_user.phone_number = form.phone_number.data
-        current_user.date_of_birth = form.date_of_birth.data
-        current_user.gender = form.gender.data
-        current_user.about = form.about.data
-        db.session.commit()
-        flash('Changes saved.', 'success')
-        return redirect(url_for('user', username = current_user.username))
-    elif request.method == 'GET':
-        form.first_name.data = current_user.first_name
-        form.last_name.data = current_user.last_name
-        form.phone_number.data = current_user.phone_number
-        form.date_of_birth.data = current_user.date_of_birth
-        form.gender.data = current_user.gender
-        form.about.data = current_user.about
-    return render_template('editprofile.html', title='Edit Profile', form=form)
+	form = ProfileEditorForm()
+	if form.validate_on_submit():
+		current_user.first_name = form.first_name.data
+		current_user.last_name = form.last_name.data
+		current_user.phone_number = form.phone_number.data
+		current_user.date_of_birth = form.date_of_birth.data
+		current_user.gender = form.gender.data
+		current_user.about = form.about.data
+		db.session.commit()
+		flash('Changes saved.', 'success')
+		return redirect(url_for('user', username = current_user.username))
+	elif request.method == 'GET':
+		form.first_name.data = current_user.first_name
+		form.last_name.data = current_user.last_name
+		form.phone_number.data = current_user.phone_number
+		form.date_of_birth.data = current_user.date_of_birth
+		form.gender.data = current_user.gender
+		form.about.data = current_user.about
+	return render_template('editprofile.html', title='Edit Profile', form=form)
 
 #Messages view function
 @app.route('/messages')
