@@ -2,10 +2,51 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-	<h1>Hello {{ current_user.username }}, and welcome to Bridge!</h1>
-    {{ wtf.quick_form(form) }}
-    <br>
-    {% for post in posts %}
-        {% include 'post.html' %}
-   	{% endfor %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2">
+                <h4><span class="label label-primary">My Groups</span> <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#createGroupModal"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button></h4>
+                <div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog" aria-labelledby="createGroupModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="newMessageModalLabel">Create a new group</h4>
+                                </div>
+                                <form method="post" role="form">
+                                {{ form2.hidden_tag() }}
+                                {{ wtf.form_errors(form2, hiddens="only") }}
+                                <div class="modal-body">
+                                    {{ wtf.form_field(form2.name) }}
+                                    {{ wtf.form_field(form2.description) }}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    {{ wtf.form_field(form2.create) }}
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                </div>
+                <hr>
+                {% if current_user.groups.all() %}
+                <ul class="nav nav-pills nav-stacked">
+                    {% for group in current_user.groups %}
+                        <li role="presentation"><a href="{{ url_for('group', name = group.name) }}">{{ group.name }}</a></li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <small>You are not part of any groups yet.</small>
+                {% endif %}
+            </div>
+            <div class="col-md-10">
+                <h4>Hello {{ current_user.username }}, and welcome to Bridge!</h4>
+                {{ wtf.quick_form(form) }}
+                <br>
+                {% for post in posts %}
+                    {% include 'post.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

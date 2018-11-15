@@ -3,6 +3,9 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
+#User-to-group association table
+user_to_group = db.Table('user_to_group', db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key = True), db.Column('group_id', db.Integer, db.ForeignKey('group.id'), primary_key = True))
+
 #User database model
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,6 +22,7 @@ class User(UserMixin, db.Model):
     phone_number = db.Column(db.String(20))
     date_of_birth = db.Column(db.String(20))
     gender = db.Column(db.String(20))
+    groups = db.relationship('Group', secondary = user_to_group, lazy = 'dynamic', backref = db.backref('members', lazy = 'dynamic'))
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -37,12 +41,27 @@ class User(UserMixin, db.Model):
         last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
         return Message.query.filter_by(recipient = self).filter(Message.timestamp > last_read_time).count()
     
+    #Check if the user belongs to a group
+    def belongs_to_group(self, group):
+        return self.groups.filter(user_to_group.c.group_id == group.id).count() > 0
+
+    #Add the user to a group
+    def add_to_group(self, group):
+        if not self.belongs_to_group(group):
+            self.groups.append(group)
+
+    #Remove the user from a group
+    def remove_from_group(self, group):
+        if self.belongs_to_group(group):
+            self.groups.remove(group)
+
 #Post database model
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
@@ -57,3 +76,13 @@ class Message(db.Model):
 	
 	def __repr__(self):
 		return '<Message {}>'.format(self.body)
+
+#Group database model
+class Group(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(20), unique = True, nullable = False)
+    description = db.Column(db.String(250))
+    posts = db.relationship('Post', backref = 'parent_group', lazy = 'dynamic')
+
+    def __repr__(self):
+        return '<Group %r>' % self.name

@@ -50,3 +50,14 @@ class ProfileEditorForm(FlaskForm):
 class MessageForm(FlaskForm):
 	message = TextAreaField('Message:', validators = [DataRequired(), Length(min = 0, max = 500)])
 	submit = SubmitField('Send message')
+
+#AddMember form
+class AddMemberForm(FlaskForm):
+    member = StringField('Username', validators = [DataRequired(), Length(min = 0, max = 50)])
+    submit = SubmitField('Add member')
+
+#CreateGroup form
+class CreateGroupForm(FlaskForm):
+    name = StringField('Group name', validators = [DataRequired(), Length(min = 0, max = 20)])
+    description = StringField('Description', validators = [DataRequired(), Length(min = 0, max = 250)])
+    create = SubmitField('Create')
