@@ -1,8 +1,8 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db
-from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm, MessageForm
+from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm, MessageForm, AddMemberForm, CreateGroupForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Post, Message
+from app.models import User, Post, Message, Group
 from werkzeug.urls import url_parse
 from datetime import datetime
 
@@ -12,15 +12,28 @@ from datetime import datetime
 @login_required
 def index():
     form = PostForm()
+    form2 = CreateGroupForm()
     if form.validate_on_submit():
         post = Post(body=form.post.data, author=current_user)
         db.session.add(post)
         db.session.commit()
         flash('Your post has been posted!', 'success')
         return redirect(url_for('index'))
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    if form2.validate_on_submit():
+        group = Group.query.filter_by(name = form2.name.data).first()
+        if group is None:
+            group = Group(name = form2.name.data, description = form2.description.data)
+            db.session.add(group)
+            current_user.add_to_group(group)
+            db.session.commit()
+            flash('Group created!', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Such a group already exists. Pick another name.', 'danger')
+            return redirect(url_for('index'))
+    posts = Post.query.filter_by(parent_group = None).order_by(Post.timestamp.desc()).all()
     return render_template("index.html", title='Home Page', form=form,
-                           posts=posts)
+                           posts=posts, form2 = form2)
 
 #Login view function
 @app.route('/login', methods=['GET', 'POST'])
@@ -66,7 +79,7 @@ def signup():
 @login_required
 def user(username):
 	user = User.query.filter_by(username=username).first_or_404()
-	posts = user.posts.order_by(Post.timestamp.desc()).all()
+	posts = user.posts.filter_by(parent_group = None).order_by(Post.timestamp.desc()).all()
 	form = MessageForm()
 	if form.validate_on_submit():
 		msg = Message(sender = current_user, recipient = user, body = form.message.data)
@@ -103,7 +116,50 @@ def editprofile():
 @app.route('/messages')
 @login_required
 def messages():
-	current_user.last_message_read_time = datetime.utcnow()
-	db.session.commit()
-	messages = current_user.messages_received.order_by(Message.timestamp.desc())
-	return render_template('messages.html', title = 'Messages', messages = messages)
+    current_user.last_message_read_time = datetime.utcnow()
+    db.session.commit()
+    messages = current_user.messages_received.order_by(Message.timestamp.desc())
+    return render_template('messages.html', title = 'Messages', messages = messages)
+
+#Group view function
+@app.route('/group/<name>', methods = ['GET', 'POST'])
+@login_required
+def group(name):
+    group = Group.query.filter_by(name = name).first_or_404()
+    posts = Post.query.filter_by(parent_group = group).order_by(Post.timestamp.desc()).all()
+    form1 = PostForm()
+    form2 = AddMemberForm()
+    if form1.validate_on_submit():
+        post = Post(body = form1.post.data, author = current_user, parent_group = group)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post has been posted!', 'success')
+        return redirect(url_for('group', name = group.name))
+    if form2.validate_on_submit():
+        user = User.query.filter_by(username = form2.member.data).first()
+        if user is None:
+            flash('No such user found.', 'danger')
+            return redirect(url_for('group', name = group.name))
+        elif user.belongs_to_group(group):
+            flash(user.username + ' is already a member of this group', 'warning')
+            return redirect(url_for('group', name = group.name))
+        else:
+            user.add_to_group(group)
+            db.session.commit()
+            flash('You have successfully added ' + user.username + ' to the group.', 'success')
+            return redirect(url_for('group', name = group.name))
+    return render_template('group.html', title = name, group = group, form1 = form1, posts = posts, form2 = form2)
+
+#Remove member from group view function
+@app.route('/remove/<username>/<groupname>')
+@login_required
+def remove(username, groupname):
+    user = User.query.filter_by(username = username).first()
+    group = Group.query.filter_by(name = groupname).first()
+    user.remove_from_group(group)
+    posts = Post.query.filter_by(parent_group = group).filter_by(author = user).all()
+    for p in posts:
+        db.session.delete(p)
+    db.session.commit()
+    flash('You have successfully removed ' + user.username + ' from the group.', 'success')
+    return redirect(url_for('group', name = groupname))
