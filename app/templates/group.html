@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    <div class="jumbotron" style="background-color: #87b5de;">
+        <h1>{{ group.name }}</h1>
+        <p>{{ group.description }}</p>
+    </div>
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#discussion" aria-controls="discussion" role="tab" data-toggle="tab">Discussion</a></li>
+        <li role="presentation"><a href="#members" aria-controls="members" role="tab" data-toggle="tab">Members</a></li>
+        <li role="presentation"><a href="#about" aria-controls="about" role="tab" data-toggle="tab">About</a></li>
+        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+    </ul>
+    <div class="tab-content">
+        <!-- Discussion tab -->
+        <div role="tabpanel" class="tab-pane fade in active" id="discussion">
+        <br>
+        {{ wtf.quick_form(form1) }}
+        <br>
+        {% for post in posts %}
+            {% include 'post.html' %}
+        {% endfor %}
+        </div>
+        <!-- Members tab -->
+        <div role="tabpanel" class="tab-pane fade" id="members">
+            <br>
+            {{ wtf.quick_form(form2) }}
+            <br>
+            <table class="table table-hover">
+                <tr class="active">
+                    <th>#</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Username</th>
+                    <th></th>
+                </tr>
+                {% for member in group.members.all() %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ member.first_name }}</td>
+                    <td>{{ member.last_name }}</td>
+                    <td>{{ member.username }}</td>
+                    <td><a href="{{ url_for('remove', username = member.username, groupname = group.name) }}"><span class="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span></a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="about">...</div>
+        <div role="tabpanel" class="tab-pane fade" id="settings">...</div>
+    </div>
+{% endblock %}
