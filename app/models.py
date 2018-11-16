@@ -1,7 +1,9 @@
-from app import db, login
+from app import db, login, app
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from time import time
+import jwt
 
 #User-to-group association table
 user_to_group = db.Table('user_to_group', db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key = True), db.Column('group_id', db.Integer, db.ForeignKey('group.id'), primary_key = True))
@@ -54,6 +56,20 @@ class User(UserMixin, db.Model):
     def remove_from_group(self, group):
         if self.belongs_to_group(group):
             self.groups.remove(group)
+
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
 
 #Post database model
 class Post(db.Model):

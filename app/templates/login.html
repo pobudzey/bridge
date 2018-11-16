@@ -8,6 +8,10 @@
 			{{ wtf.quick_form(form) }}
 		</div>
 	</div>
+	 <p>
+        Forgot Your Password?
+        <a href="{{ url_for('reset_password_request') }}">Click to Reset It</a>
+    </p>
 	<br>
 	<p>New to Bridge? <a href="{{ url_for('signup') }}">Sign up now!</a></p>
 {% endblock %}
