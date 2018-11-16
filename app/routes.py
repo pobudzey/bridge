@@ -151,17 +151,3 @@ def group(name):
             flash('You have successfully added ' + user.username + ' to the group.', 'success')
             return redirect(url_for('group', name = group.name))
     return render_template('group.html', title = name, group = group, form1 = form1, posts = posts, form2 = form2)
-
-#Remove member from group view function
-@app.route('/remove/<username>/<groupname>')
-@login_required
-def remove(username, groupname):
-    user = User.query.filter_by(username = username).first()
-    group = Group.query.filter_by(name = groupname).first()
-    user.remove_from_group(group)
-    posts = Post.query.filter_by(parent_group = group).filter_by(author = user).all()
-    for p in posts:
-        db.session.delete(p)
-    db.session.commit()
-    flash('You have successfully removed ' + user.username + ' from the group.', 'success')
-    return redirect(url_for('group', name = groupname))
