@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for, request
-from app import app, db
+from app import app, db, images
 from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm, MessageForm, AddMemberForm, CreateGroupForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post, Message, Group
@@ -14,7 +14,9 @@ def index():
     form = PostForm()
     form2 = CreateGroupForm()
     if form.validate_on_submit():
-        post = Post(body=form.post.data, author=current_user)
+        filename = images.save(request.files['image'])
+        url = images.url(filename)
+        post = Post(image_filename=filename, image_url=url, body=form.post.data, author=current_user)
         db.session.add(post)
         db.session.commit()
         flash('Your post has been posted!', 'success')
