@@ -1,4 +1,31 @@
 <div class="panel panel-info">
-    <div class="panel-heading"><a href='{{ url_for('user', username=post.author.username) }}'><b>{{ post.author.username }}</b></a> posted {{ moment(post.timestamp).fromNow() }}</div>
-    <div class="panel-body">{{ post.body }}</div>
+    <div class="panel-heading">
+        <a href="{{ url_for('user', username = post.author.username) }}"><b>{{ post.author.username }}</b></a>
+        posted {{ moment(post.timestamp).fromNow() }}
+        <div class="pull-right">
+            {% if current_user.has_liked(post) %}
+            <a href="{{ url_for('like', post_id = post.id) }}"><span class="fas fa-thumbs-up"></span></a>
+            {% else %}
+            <a href="{{ url_for('like', post_id = post.id) }}"><span class="far fa-thumbs-up"></span></a>
+            {% endif %}
+            {% if post.likes != 0 %}
+                {{ post.likes }}
+            {% else %}
+                 &nbsp;
+            {% endif %}
+            {% if current_user.has_disliked(post) %}
+            <a href="{{ url_for('dislike', post_id = post.id) }}"><span class="fas fa-thumbs-down"></span></a>
+            {% else %}
+            <a href="{{ url_for('dislike', post_id = post.id) }}"><span class="far fa-thumbs-down"></span></a>
+            {% endif %}
+            {% if post.dislikes != 0 %}
+                {{ post.dislikes }}
+            {% else %}
+                &nbsp;
+            {% endif %}
+        </div>
+    </div>
+    <div class="panel-body">
+        {{ post.body }}
+    </div>
 </div>
