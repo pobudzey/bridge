@@ -1,5 +1,10 @@
 {% extends 'bootstrap/base.html' %}
 
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+{% endblock styles %}
+
 {% block title %}
     {% if title %}{{ title }} - Bridge{% else %}Welcome to Bridge!{% endif %}
 {% endblock %}
@@ -18,7 +23,8 @@
                 <li><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
                 {% else %}
                 <li>
-			<a href="{{ url_for('messages') }}">Messages
+			<a href="{{ url_for('messages') }}">
+			<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Messages
 			{% set new_messages = current_user.new_messages() %}
 			{% if new_messages %}
 			<span class="badge">{{ new_messages }}</span>

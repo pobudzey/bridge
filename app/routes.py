@@ -163,3 +163,40 @@ def remove(username, groupname):
     db.session.commit()
     flash('You have successfully removed ' + user.username + ' from the group.', 'success')
     return redirect(url_for('group', name = groupname))
+
+#Like post view function
+@app.route('/like/<post_id>')
+@login_required
+def like(post_id):
+    post = Post.query.filter_by(id = post_id).first_or_404()
+    if current_user.has_liked(post):
+        current_user.unlike(post)
+    elif not current_user.has_liked(post) and not current_user.has_disliked(post):
+        current_user.like(post)
+    else:
+        current_user.undislike(post)
+        current_user.like(post)
+    db.session.commit()
+    if post.parent_group:
+        return redirect(url_for('group', name = post.parent_group.name))
+    else:
+        return redirect(url_for('index'))
+
+#Dislike post view function
+@app.route('/dislike/<post_id>')
+@login_required
+def dislike(post_id):
+    post = Post.query.filter_by(id = post_id).first_or_404()
+    if current_user.has_disliked(post):
+        current_user.undislike(post)
+    elif not current_user.has_disliked(post) and not current_user.has_liked(post):
+        current_user.dislike(post)
+    else:
+        current_user.unlike(post)
+        current_user.dislike(post)
+    db.session.commit()
+    if post.parent_group:
+        return redirect(url_for('group', name = post.parent_group.name))
+    else:
+        return redirect(url_for('index'))
+
