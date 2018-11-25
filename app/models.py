@@ -6,6 +6,12 @@ from flask_login import UserMixin
 #User-to-group association table
 user_to_group = db.Table('user_to_group', db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key = True), db.Column('group_id', db.Integer, db.ForeignKey('group.id'), primary_key = True))
 
+#Likes association table
+likes = db.Table('likes', db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key = True), db.Column('post_id', db.Integer, db.ForeignKey('post.id'), primary_key = True))
+
+#Dislikes association table
+dislikes = db.Table('dislikes', db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key = True), db.Column('post_id', db.Integer, db.ForeignKey('post.id'), primary_key = True))
+
 #User database model
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -23,6 +29,8 @@ class User(UserMixin, db.Model):
     date_of_birth = db.Column(db.String(20))
     gender = db.Column(db.String(20))
     groups = db.relationship('Group', secondary = user_to_group, lazy = 'dynamic', backref = db.backref('members', lazy = 'dynamic'))
+    liked_posts = db.relationship('Post', secondary = likes, lazy = 'dynamic', backref = db.backref('users_that_liked', lazy = 'dynamic'))
+    disliked_posts = db.relationship('Post', secondary = dislikes, lazy = 'dynamic', backref = db.backref('users_that_disliked', lazy = 'dynamic'))
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -55,6 +63,38 @@ class User(UserMixin, db.Model):
         if self.belongs_to_group(group):
             self.groups.remove(group)
 
+    #Check if the user has liked a post
+    def has_liked(self, post):
+        return self.liked_posts.filter(likes.c.post_id == post.id).count() > 0
+
+    #Like a post
+    def like(self, post):
+        if not self.has_liked(post):
+            post.likes += 1
+            self.liked_posts.append(post)
+
+    #Unlike a post
+    def unlike(self, post):
+        if self.has_liked(post):
+            post.likes -= 1
+            self.liked_posts.remove(post)
+
+    #Check if the user has disliked a post
+    def has_disliked(self, post):
+        return self.disliked_posts.filter(dislikes.c.post_id == post.id).count() > 0
+
+    #Dislike a post
+    def dislike(self, post):
+        if not self.has_disliked(post):
+            post.dislikes += 1
+            self.disliked_posts.append(post)
+
+    #Undislike a post
+    def undislike(self, post):
+        if self.has_disliked(post):
+            post.dislikes -= 1
+            self.disliked_posts.remove(post)
+
 #Post database model
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -62,6 +102,8 @@ class Post(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+    likes = db.Column(db.Integer, default = 0)
+    dislikes = db.Column(db.Integer, default = 0)
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
