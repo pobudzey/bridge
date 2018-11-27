@@ -1,0 +1,1 @@
+<div class="well well-sm" style ="border-left: 10px solid #ccc;"><a href="{{ url_for('user', username = comment.author.username) }}" style="color:#333;"><strong>{{ comment.author.username }}</strong></a> commented {{ moment(comment.timestamp).fromNow() }}<br>{{ comment.body }}</div>
