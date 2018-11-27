@@ -1,7 +1,29 @@
 <div class="panel panel-info">
     <div class="panel-heading">
         <a href="{{ url_for('user', username = post.author.username) }}"><b>{{ post.author.username }}</b></a>
-        posted {{ moment(post.timestamp).fromNow() }}
+        posted {{ moment(post.timestamp).fromNow() }} <a role="button" data-toggle="modal" data-target="#commentModal{{ post.id }}"><span class="fas fa-reply"></span></a>
+        <div class="modal fade" id="commentModal{{ post.id }}" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="commentModalLabel">Reply to {{ post.author.username }}</h4>
+                    </div>
+                    <form action="{{ url_for('comment', post_id = post.id) }}" method="post">
+                    <div class="modal-body">
+                      <div class="form-group">
+                        <label for="comment">Comment</label>
+                        <textarea class="form-control" rows="3" id ="comment" name="comment"></textarea>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-primary">Comment</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
         <div class="pull-right">
             {% if current_user.has_liked(post) %}
             <a href="{{ url_for('like', post_id = post.id) }}"><span class="fas fa-thumbs-up"></span></a>
