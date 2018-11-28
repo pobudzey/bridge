@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from app import app, db
 from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm, MessageForm, AddMemberForm, CreateGroupForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Post, Message, Group
+from app.models import User, Post, Message, Group, Comment
 from werkzeug.urls import url_parse
 from datetime import datetime
 
@@ -200,3 +200,16 @@ def dislike(post_id):
     else:
         return redirect(url_for('index'))
 
+#Comment view function
+@app.route('/comment/<post_id>', methods = ['GET', 'POST'])
+@login_required
+def comment(post_id):
+    post = Post.query.filter_by(id = post_id).first_or_404()
+    comment = Comment(body = request.form['comment'], author = current_user, parent_post = post)
+    db.session.add(comment)
+    db.session.commit()
+    flash('You have successfully commented!', 'success')
+    if post.parent_group:
+        return redirect(url_for('group', name = post.parent_group.name))
+    else:
+        return redirect(url_for('index'))

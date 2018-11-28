@@ -33,7 +33,7 @@ class SignupForm(FlaskForm):
 #Form for posts
 class PostForm(FlaskForm):
     post = TextAreaField('Say something!', validators=[
-        DataRequired(), Length(min=1, max=140)])
+        DataRequired(), Length(min=1, max=500)])
     submit = SubmitField('Submit')
 
 #Profile editor form

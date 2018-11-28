@@ -7,10 +7,10 @@
         <p>{{ group.description }}</p>
     </div>
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#discussion" aria-controls="discussion" role="tab" data-toggle="tab">Discussion</a></li>
-        <li role="presentation"><a href="#members" aria-controls="members" role="tab" data-toggle="tab">Members</a></li>
-        <li role="presentation"><a href="#about" aria-controls="about" role="tab" data-toggle="tab">About</a></li>
-        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+        <li role="presentation" class="active"><a href="#discussion" aria-controls="discussion" role="tab" data-toggle="tab"><span class="fas fa-comment"></span> Discussion</a></li>
+        <li role="presentation"><a href="#members" aria-controls="members" role="tab" data-toggle="tab"><span class="fas fa-user"></span> Members</a></li>
+        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab"> <span class="fas fa-cog"></span> Settings</a></li>
+        <li role="presentation"><a href="#about" aria-controls="about" role="tab" data-toggle="tab"><span class="fas fa-info-circle"></span> About</a></li>
     </ul>
     <div class="tab-content">
         <!-- Discussion tab -->
@@ -20,6 +20,12 @@
         <br>
         {% for post in posts %}
             {% include 'post.html' %}
+            {% for comment in post.comments %}
+                <div class="row">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-11">{% include 'comment.html' %}</div>
+                </div>
+            {% endfor %}
         {% endfor %}
         </div>
         <!-- Members tab -->

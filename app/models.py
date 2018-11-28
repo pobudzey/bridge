@@ -31,6 +31,7 @@ class User(UserMixin, db.Model):
     groups = db.relationship('Group', secondary = user_to_group, lazy = 'dynamic', backref = db.backref('members', lazy = 'dynamic'))
     liked_posts = db.relationship('Post', secondary = likes, lazy = 'dynamic', backref = db.backref('users_that_liked', lazy = 'dynamic'))
     disliked_posts = db.relationship('Post', secondary = dislikes, lazy = 'dynamic', backref = db.backref('users_that_disliked', lazy = 'dynamic'))
+    comments = db.relationship('Comment', backref = 'author', lazy = 'dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -98,12 +99,13 @@ class User(UserMixin, db.Model):
 #Post database model
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(140))
+    body = db.Column(db.String(500))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     likes = db.Column(db.Integer, default = 0)
     dislikes = db.Column(db.Integer, default = 0)
+    comments = db.relationship('Comment', backref = 'parent_post', lazy = 'dynamic')
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
@@ -128,3 +130,11 @@ class Group(db.Model):
 
     def __repr__(self):
         return '<Group %r>' % self.name
+
+#Comment database model
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    body = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime, index = True, default = datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable = False)
