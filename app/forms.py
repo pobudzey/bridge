@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Length
+from wtforms.validators import DataRequired, ValidationError, Email, EqualTo, Length, Optional
 from app.models import User
+from flask_wtf.file import FileField, FileAllowed, FileRequired
+from app import images
 
 #Login form
 class LoginForm(FlaskForm):
@@ -32,8 +34,8 @@ class SignupForm(FlaskForm):
 
 #Form for posts
 class PostForm(FlaskForm):
-    post = TextAreaField('Say something!', validators=[
-        DataRequired(), Length(min=1, max=500)])
+    post = TextAreaField('Say something!', validators = [Optional(), Length(min = 1, max = 500)])
+    image = FileField('Image upload', validators = [FileAllowed(images, 'Only images allowed.')])
     submit = SubmitField('Submit')
 
 #Profile editor form
