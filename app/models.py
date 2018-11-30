@@ -106,6 +106,8 @@ class Post(db.Model):
     likes = db.Column(db.Integer, default = 0)
     dislikes = db.Column(db.Integer, default = 0)
     comments = db.relationship('Comment', backref = 'parent_post', lazy = 'dynamic')
+    image_filename = db.Column(db.String, default = None, nullable = True)
+    image_url = db.Column(db.String, default = None, nullable = True)
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
