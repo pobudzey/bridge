@@ -48,6 +48,12 @@
         </div>
     </div>
     <div class="panel-body">
+      {% if post.body and post.image_url %}
+        {{ post.body }}<br><br><img src="{{ post.image_url }}" class="img-responsive" alt="{{ post.image_filename }}">
+      {% elif not post.body and post.image_url %}
+        <img src="{{ post.image_url }}" class="img-responsive" alt="{{ post.image_filename }}">
+      {% else %}
         {{ post.body }}
+      {% endif %}
     </div>
 </div>
