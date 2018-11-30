@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for, request
-from app import app, db
+from app import app, db, images
 from app.forms import LoginForm, SignupForm, PostForm, ProfileEditorForm, MessageForm, AddMemberForm, CreateGroupForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post, Message, Group, Comment
@@ -14,7 +14,12 @@ def index():
     form = PostForm()
     form2 = CreateGroupForm()
     if form.validate_on_submit():
-        post = Post(body=form.post.data, author=current_user)
+        if form.image.data is not None:
+            filename = images.save(request.files['image'])
+            url = images.url(filename)
+            post = Post(body=form.post.data, author=current_user, image_filename = filename, image_url = url)
+        else:
+            post = Post(body = form.post.data, author = current_user)
         db.session.add(post)
         db.session.commit()
         flash('Your post has been posted!', 'success')
@@ -130,7 +135,12 @@ def group(name):
     form1 = PostForm()
     form2 = AddMemberForm()
     if form1.validate_on_submit():
-        post = Post(body = form1.post.data, author = current_user, parent_group = group)
+        if form1.image.data is not None:
+            filename = images.save(request.files['image'])
+            url = images.url(filename)
+            post = Post(body = form1.post.data, author = current_user, parent_group = group, image_filename = filename, image_url = url)
+        else:
+            post = Post(body = form1.post.data, author = current_user, parent_group = group)
         db.session.add(post)
         db.session.commit()
         flash('Your post has been posted!', 'success')
