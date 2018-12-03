@@ -56,7 +56,7 @@ class MessageForm(FlaskForm):
 #AddMember form
 class AddMemberForm(FlaskForm):
     member = StringField('Username', validators = [DataRequired(), Length(min = 0, max = 50)])
-    submit = SubmitField('Add member')
+    add = SubmitField('Add member')
 
 #CreateGroup form
 class CreateGroupForm(FlaskForm):
