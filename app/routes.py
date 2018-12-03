@@ -13,7 +13,7 @@ from datetime import datetime
 def index():
     form = PostForm()
     form2 = CreateGroupForm()
-    if form.validate_on_submit():
+    if form.submit.data and form.validate_on_submit():
         if form.image.data is not None:
             filename = images.save(request.files['image'])
             url = images.url(filename)
@@ -24,7 +24,7 @@ def index():
         db.session.commit()
         flash('Your post has been posted!', 'success')
         return redirect(url_for('index'))
-    if form2.validate_on_submit():
+    if form2.create.data and form2.validate_on_submit():
         group = Group.query.filter_by(name = form2.name.data).first()
         if group is None:
             group = Group(name = form2.name.data, description = form2.description.data)
@@ -134,7 +134,7 @@ def group(name):
     posts = Post.query.filter_by(parent_group = group).order_by(Post.timestamp.desc()).all()
     form1 = PostForm()
     form2 = AddMemberForm()
-    if form1.validate_on_submit():
+    if form1.submit.data and form1.validate_on_submit():
         if form1.image.data is not None:
             filename = images.save(request.files['image'])
             url = images.url(filename)
@@ -145,7 +145,7 @@ def group(name):
         db.session.commit()
         flash('Your post has been posted!', 'success')
         return redirect(url_for('group', name = group.name))
-    if form2.validate_on_submit():
+    if form2.add.data and form2.validate_on_submit():
         user = User.query.filter_by(username = form2.member.data).first()
         if user is None:
             flash('No such user found.', 'danger')
